@@ -30,3 +30,7 @@ faiss_index/
 .vscode/
 *.iml
 .DS_Store
+
+# ─── App Settings ─────────────────────────────────────────
+api-gateway-dotnet/appsettings.Development.json
+api-gateway-dotnet/appsettings.Production.json
