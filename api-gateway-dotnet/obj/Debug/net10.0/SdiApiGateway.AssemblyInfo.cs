@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SdiApiGateway")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13669dfd84b872b518be91671642e3948858a669")]
 [assembly: System.Reflection.AssemblyProductAttribute("SdiApiGateway")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SdiApiGateway")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

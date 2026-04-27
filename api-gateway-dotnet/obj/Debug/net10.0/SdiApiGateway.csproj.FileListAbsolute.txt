@@ -127,3 +127,4 @@
 /Users/kartikkhanna/Desktop/SystemDesigninterviewNET/api-gateway-dotnet/obj/Debug/net10.0/SdiApiGateway.genruntimeconfig.cache
 /Users/kartikkhanna/Desktop/SystemDesigninterviewNET/api-gateway-dotnet/obj/Debug/net10.0/ref/SdiApiGateway.dll
 /Users/kartikkhanna/Desktop/SystemDesigninterviewNET/api-gateway-dotnet/bin/Debug/net10.0/appsettings.Production.json
+/Users/kartikkhanna/Desktop/SystemDesigninterviewNET/api-gateway-dotnet/obj/Debug/net10.0/SdiApiGateway.sourcelink.json
