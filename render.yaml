@@ -1,0 +1,34 @@
+services:
+  # ─── Unified .NET 10 API Gateway + LLM Service ──────────
+  - type: web
+    name: sdi-api-gateway
+    env: docker
+    region: ohio
+    plan: free
+    dockerContext: ./api-gateway-dotnet
+    dockerfilePath: ./api-gateway-dotnet/Dockerfile
+    branch: main
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_SSL
+        value: "true"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: sdi-knowledge

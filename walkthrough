@@ -1,0 +1,164 @@
+# 🧠 AI System Design Interviewer — Build Walkthrough
+
+## What Was Built
+
+A production-grade, multi-agent GenAI platform for adaptive system design interview simulation. The system spans **3 services**, **60+ files**, and implements real GenAI patterns (MCP, A2A, RAG).
+
+---
+
+## Architecture
+
+```mermaid
+graph TB
+    subgraph Frontend["React + Vite"]
+        LP[Landing Page] --> IP[Interview Page] --> RP[Results Page]
+    end
+
+    subgraph Gateway["Spring Boot API Gateway (Render)"]
+        IC[InterviewController] --> IS[InterviewService]
+        IS --> IA[InterviewAgent]
+        IA --> QA[QuestionAgent]
+        IA --> EA[EvaluationAgent]
+        IA --> HA[HintAgent]
+        IS --> SS[SessionService]
+        IS --> PG[(Supabase PostgreSQL)]
+    end
+
+    subgraph LLM["Python FastAPI (Render)"]
+        MCP[MCP Router] --> RT[RAG Tool]
+        MCP --> ST[Scoring Tool]
+        MCP --> DT[Diagram Tool]
+        MCP --> HT[Hint Tool]
+        RT --> PC[(Pinecone Index)]
+        ST --> GC[Gemini Client]
+        DT --> GC
+        HT --> GC
+    end
+
+    Frontend --> Gateway
+    QA --> LLM
+    EA --> LLM
+    HA --> LLM
+    SS --> Redis[(Upstash Redis)]
+```
+
+---
+
+## Components Built
+
+### Spring Boot API Gateway (28 files)
+
+| Layer | Files | Purpose |
+|-------|-------|---------|
+| Controllers | `InterviewController`, `HealthController` | REST API + A2A discovery |
+| Services | `InterviewService`, `SessionService` | Business logic, Redis session management |
+| Agents | `InterviewAgent`, `QuestionAgent`, `EvaluationAgent`, `HintAgent` | A2A multi-agent orchestration |
+| Models | 3 entities, 7 DTOs, 3 enums | Domain model with adaptive difficulty |
+| Config | `RedisConfig`, `CorsConfig`, `WebSocketConfig`, `AppConfig` | Infrastructure configuration |
+| Client | `LlmServiceClient` | HTTP client to Python MCP service |
+
+### Python LLM Service (15 files)
+
+| Module | Files | Purpose |
+|--------|-------|---------|
+| Tools | `rag_tool`, `scoring_tool`, `diagram_tool`, `hint_tool` | MCP tool implementations |
+| LLM | `gemini_client`, `prompts` | Gemini API wrapper + prompt templates |
+| RAG | `embeddings`, `retriever`, `indexer` | Pinecone vector search pipeline |
+| Router | `mcp_tools` | MCP-compatible endpoints with manifest |
+
+### React Frontend (8 files)
+
+| Page | Key Features |
+|------|-------------|
+| Landing | Hero section, 3 company modes, 10 topics grid, animated selection |
+| Interview | Split-pane layout, chat thread, live scoring sidebar, progressive hints |
+| Results | Animated radial charts, rubric breakdown, round-by-round review, architecture diagram |
+
+### Knowledge Base (10 documents)
+
+- **Patterns**: Caching, Sharding, Load Balancing, CAP Theorem, Message Queues, Database Design, Microservices
+- **Architectures**: URL Shortener, Netflix, Uber
+
+---
+
+## Key Design Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| LLM Provider | Google Gemini (free tier) | Cost-free for portfolio, `response_mime_type` for structured JSON |
+| Database | Supabase PostgreSQL | Persistent production-ready storage for interview sessions |
+| A2A Protocol | Lightweight custom pattern | Official SDK still maturing, custom gives full control |
+| RAG Fallback | Hardcoded knowledge map | Ensures system works even without Pinecone index built |
+| Adaptive Difficulty | Score-based adjustment | `score >= 8` → harder, `score <= 4` → easier |
+| Company Modes | Weighted rubrics | Google emphasizes scalability (2.5x), Amazon emphasizes trade-offs (2.5x) |
+
+---
+
+## How to Run
+
+### Step 1: Add your Gemini and Pinecone API keys
+```bash
+cp .env.example .env
+# Edit .env → set GEMINI_API_KEY, PINECONE_API_KEY, PINECONE_INDEX_NAME
+```
+
+### Step 2: Start Redis
+```bash
+docker run -d -p 6379:6379 redis:7-alpine
+```
+
+### Step 3: Start LLM Service
+```bash
+cd llm-service
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+### Step 4: Start API Gateway
+```bash
+cd api-gateway
+./mvnw spring-boot:run
+```
+
+### Step 5: Start Frontend
+```bash
+cd frontend
+npm install && npm run dev
+```
+
+### Step 6: Open browser → http://localhost:5173
+
+---
+
+## Validation
+
+- ✅ Frontend builds and renders (Vite 5 + React 18)
+- ✅ Project structure matches architecture plan
+- ✅ All 60+ source files created
+- ✅ Landing page renders with dark theme, glassmorphism, animations
+- ⏳ End-to-end flow requires Gemini API key + Redis running
+
+---
+
+## Cloud Deployment
+
+The repository is now fully configured for a cloud deployment using free tiers:
+
+1. **Frontend**: Vercel (uses the `vercel.json` for React router support).
+2. **Backends**: Render (uses the `render.yaml` Blueprint to automatically deploy both Spring Boot and FastAPI).
+3. **Databases**:
+   - **PostgreSQL**: Create a free database on [Supabase](https://supabase.com/).
+   - **Redis**: Create a free database on [Upstash](https://upstash.com/).
+   - **Vector DB**: Create a free index on [Pinecone](https://pinecone.io/).
+
+When deploying, you will simply map the environment variables (e.g. `DATABASE_URL`, `REDIS_HOST`, `GEMINI_API_KEY`) in your Vercel and Render dashboards.
+
+---
+
+## Next Steps for the User
+
+1. **Create Free Cloud Accounts**: Supabase, Upstash, and Pinecone.
+2. **Update `.env` locally**: Add your cloud database credentials.
+3. **Connect to Render**: In the Render dashboard, create a new "Blueprint" instance and point it to this GitHub repository. Render will read `render.yaml` and deploy both backend services.
+4. **Connect to Vercel**: Import the `frontend/` folder into Vercel and it will automatically deploy the React application.

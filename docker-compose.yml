@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  # ─── Redis ─────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: sdi-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── .NET 10 API Gateway (unified — includes LLM logic) ──
+  api-gateway:
+    build:
+      context: ./api-gateway-dotnet
+      dockerfile: Dockerfile
+    container_name: sdi-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      DATABASE_URL: ${DATABASE_URL:-Host=postgres;Port=5432;Database=sdi_db}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-sdi_user}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-sdi_pass}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      PINECONE_API_KEY: ${PINECONE_API_KEY}
+      PINECONE_INDEX_NAME: ${PINECONE_INDEX_NAME:-sdi-knowledge}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ─── React Frontend ───────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sdi-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080
+    depends_on:
+      - api-gateway
+
+volumes:
+  redis_data:

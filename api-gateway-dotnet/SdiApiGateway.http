@@ -1,0 +1,6 @@
+@SdiApiGateway_HostAddress = http://localhost:5153
+
+GET {{SdiApiGateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

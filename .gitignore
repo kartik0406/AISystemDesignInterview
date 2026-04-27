@@ -1,0 +1,32 @@
+# ─── Environment ──────────────────────────────────────────
+.env
+
+# ─── Java / Spring Boot ──────────────────────────────────
+api-gateway/target/
+api-gateway/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+
+# ─── Python ───────────────────────────────────────────────
+llm-service/__pycache__/
+llm-service/**/__pycache__/
+llm-service/.venv/
+llm-service/venv/
+*.pyc
+*.pyo
+
+# ─── Node / React ────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+
+# ─── FAISS Index ──────────────────────────────────────────
+*.faiss
+*.pkl
+faiss_index/
+
+# ─── IDE ──────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+.DS_Store
