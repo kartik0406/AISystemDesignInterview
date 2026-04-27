@@ -93,6 +93,7 @@ public class InterviewService
         };
 
         session.AddRound(round);
+        _db.InterviewRounds.Add(round);
         await _db.SaveChangesAsync();
 
         return new InterviewResponse
@@ -188,6 +189,7 @@ public class InterviewService
         };
 
         session.AddRound(nextRound);
+        _db.InterviewRounds.Add(nextRound);
         await _db.SaveChangesAsync();
 
         return new InterviewResponse
